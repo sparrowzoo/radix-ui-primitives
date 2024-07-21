@@ -1,5 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-webpack5';
-import path from 'path';
+import * as path from 'path';
 
 const config: StorybookConfig = {
   stories: ['../packages/core/**/*.stories.tsx', '../packages/react/**/*.stories.tsx'],
@@ -35,7 +35,7 @@ const config: StorybookConfig = {
     resolve: {
       ...config.resolve,
       alias: {
-        ...config.resolve.alias,
+        ...config.resolve?.alias,
         ...convertTsConfigPathsToWebpackAliases(),
       },
     },
@@ -56,8 +56,8 @@ function convertTsConfigPathsToWebpackAliases() {
   const rootDir = path.resolve(__dirname, '../');
   const tsconfig = require('../tsconfig.json');
   const tsconfigPaths: Array<string | string[]> = Object.entries(tsconfig.compilerOptions.paths);
-
-  return tsconfigPaths.reduce((aliases, [realPath, mappedPath]) => {
+  console.log(tsconfigPaths);
+  return tsconfigPaths.reduce((aliases: { [key: string]: string }, [realPath, mappedPath]) => {
     aliases[realPath] = path.join(rootDir, mappedPath[0]);
     return aliases;
   }, {});

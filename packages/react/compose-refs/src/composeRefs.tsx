@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+// Types
 type PossibleRef<T> = React.Ref<T> | undefined;
 
 /**
@@ -8,8 +9,10 @@ type PossibleRef<T> = React.Ref<T> | undefined;
  */
 function setRef<T>(ref: PossibleRef<T>, value: T) {
   if (typeof ref === 'function') {
+    // callback ref
     ref(value);
   } else if (ref !== null && ref !== undefined) {
+    // RefObject
     (ref as React.MutableRefObject<T>).current = value;
   }
 }

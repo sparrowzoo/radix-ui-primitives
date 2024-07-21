@@ -52,7 +52,7 @@
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
-    "cypress": "^8.0.0",
+    "cypress": "^13.13.1",
     "cypress-real-events": "^1.5.0",
     "esbuild": "0.21.4",
     "eslint": "^7.32.0",
@@ -97,7 +97,10 @@
       "**/?(*.)+(test).+(ts|tsx|js)"
     ],
     "transform": {
-      "^.+\\.(ts|tsx)$": "ts-jest"
+      "^.+\\.(ts|tsx)$": [
+        "ts-jest",
+        "babel-jest"
+      ]
     },
     "moduleNameMapper": {
       "@radix-ui/react-(.+)$": "<rootDir>/packages/react/$1/src",
@@ -166,12 +169,6 @@
     "node_modules",
     "dist"
   ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged && lint-staged",
-      "pre-push": "yarn types:check && yarn bump:check"
-    }
-  },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
   },

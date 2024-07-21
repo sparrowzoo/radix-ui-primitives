@@ -6,7 +6,7 @@ import { composeRefs } from '@radix-ui/react-compose-refs';
  * -----------------------------------------------------------------------------------------------*/
 
 interface SlotProps extends React.HTMLAttributes<HTMLElement> {
-  children?: React.ReactNode;
+  children?: React.ReactNode; //?: 可选参数，默认值为 undefined
 }
 
 const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {

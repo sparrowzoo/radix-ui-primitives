@@ -1,31 +1,36 @@
 import { globSync } from 'glob';
 import * as esbuild from 'esbuild';
 import * as tsup from 'tsup';
+import * as path from 'path';
 
-async function build(path) {
-  const file = `${path}/src/index.ts`;
-  const dist = `${path}/dist`;
+async function build(pathName) {
+  //windows 下的系统路径兼容，如果是linux 或者mac 将下方代码注释掉
+  pathName = pathName.split(path.sep).join('/');
+  console.log(`Building ${pathName}`);
+  let file = `${pathName}/src/index.ts`;
+  let dist = `${pathName}/dist`;
+  console.log(`Building ${pathName}/dist/index.js and ${pathName}/dist/index.mjs`);
 
   const esbuildConfig = {
     entryPoints: [file],
-    external: ['@radix-ui/*'],
+    external: ['@radix-ui/*'], //
     packages: 'external',
     bundle: true,
     sourcemap: true,
     format: 'cjs',
-    target: 'es2022',
+    target: 'es2015',
     outdir: dist,
   };
 
   await esbuild.build(esbuildConfig);
-  console.log(`Built ${path}/dist/index.js`);
+  console.log(`Built ${pathName}/dist/index.js`);
 
   await esbuild.build({
     ...esbuildConfig,
     format: 'esm',
     outExtension: { '.js': '.mjs' },
   });
-  console.log(`Built ${path}/dist/index.mjs`);
+  console.log(`Built ${pathName}/dist/index.mjs`);
 
   // tsup is used to emit d.ts files only (esbuild can't do that).
   //
@@ -42,7 +47,8 @@ async function build(path) {
     silent: true,
     external: [/@radix-ui\/.+/],
   });
-  console.log(`Built ${path}/dist/index.d.ts`);
+  console.log(`Built ${pathName}/dist/index.d.ts`);
 }
 
+//遍历'packages/下的所有目录，并逐一编译
 globSync('packages/*/*').forEach(build);

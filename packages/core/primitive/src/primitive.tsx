@@ -5,8 +5,7 @@ function composeEventHandlers<E>(
 ) {
   return function handleEvent(event: E) {
     originalEventHandler?.(event);
-
-    if (checkForDefaultPrevented === false || !((event as unknown) as Event).defaultPrevented) {
+    if (!checkForDefaultPrevented || !(event as Event).defaultPrevented) {
       return ourEventHandler?.(event);
     }
   };
