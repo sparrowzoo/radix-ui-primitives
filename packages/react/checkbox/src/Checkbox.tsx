@@ -43,6 +43,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
     const {
       __scopeCheckbox,
       name,
+      //属性别名
       checked: checkedProp,
       defaultChecked,
       required,
