@@ -48,8 +48,10 @@ function useUncontrolledState<T>({
                                    onChange
                                  }: Omit<UseControllableStateParams<T>, 'prop'>) {
 
+  //只要不手动调用setUncontrolledProp 方法，uncontrolledState 里面的值就不会更新
   const uncontrolledState = React.useState<T | undefined>(defaultProp);
   const [value] = uncontrolledState;
+  //即使setUncontrolledProp 被调用了 prevValueRef.current 也不会更新
   const prevValueRef = React.useRef(value);
   //useCallBack
   /**
