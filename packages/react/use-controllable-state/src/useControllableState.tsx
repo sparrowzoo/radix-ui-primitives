@@ -19,12 +19,14 @@ function useControllableState<T>({
   const [uncontrolledProp, setUncontrolledProp] =
     useUncontrolledState({ defaultProp, onChange });
   //如果传入了 prop，则认为是受控组件，否则是非受控组件
+  /**
+   * <input defaultValue={defaultValue} value={value} onChange={(e) => setValue(e.target.value)} />
+   */
   const isControlled = prop !== undefined;
   const value = isControlled ? prop : uncontrolledProp;
   //这里的useCallbackRef是为了防止 onChange 回调函数被多次调用
   //与官方的useCallback 的hook一致
   const handleChange = useCallbackRef(onChange);
-
   const setValue: React.Dispatch<React.SetStateAction<T | undefined>> = React.useCallback(
     (nextValue) => {
       if (isControlled) {
@@ -49,6 +51,14 @@ function useUncontrolledState<T>({
   const uncontrolledState = React.useState<T | undefined>(defaultProp);
   const [value] = uncontrolledState;
   const prevValueRef = React.useRef(value);
+  //useCallBack
+  /**
+   * A custom hook that converts a callback to a ref
+   * 1. to avoid triggering re-renders when passed as aprop
+   * 2. or avoid re-executing effects when passed as a dependency
+   *
+   * ? 为什么不直接用官方的useCallBack?
+   */
   const handleChange = useCallbackRef(onChange);
   React.useEffect(() => {
     if (prevValueRef.current !== value) {
