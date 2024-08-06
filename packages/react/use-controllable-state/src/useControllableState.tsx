@@ -49,6 +49,7 @@ function useUncontrolledState<T>({
   const uncontrolledState = React.useState<T | undefined>(defaultProp);
   const [value] = uncontrolledState;
   const prevValueRef = React.useRef(value);
+  //这里的useCallbackRef是为了防止 onChange 回调函数被多次调用
   const handleChange = useCallbackRef(onChange);
   React.useEffect(() => {
     if (prevValueRef.current !== value) {
