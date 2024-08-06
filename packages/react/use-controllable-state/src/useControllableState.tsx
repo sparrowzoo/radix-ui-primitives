@@ -24,8 +24,6 @@ function useControllableState<T>({
    */
   const isControlled = prop !== undefined;
   const value = isControlled ? prop : uncontrolledProp;
-  //这里的useCallbackRef是为了防止 onChange 回调函数被多次调用
-  //与官方的useCallback 的hook一致
   const handleChange = useCallbackRef(onChange);
   const setValue: React.Dispatch<React.SetStateAction<T | undefined>> = React.useCallback(
     (nextValue) => {
@@ -48,10 +46,9 @@ function useUncontrolledState<T>({
                                    onChange
                                  }: Omit<UseControllableStateParams<T>, 'prop'>) {
 
-  //只要不手动调用setUncontrolledProp 方法，uncontrolledState 里面的值就不会更新
+
   const uncontrolledState = React.useState<T | undefined>(defaultProp);
   const [value] = uncontrolledState;
-  //即使setUncontrolledProp 被调用了 prevValueRef.current 也不会更新
   const prevValueRef = React.useRef(value);
   //useCallBack
   /**
@@ -70,5 +67,4 @@ function useUncontrolledState<T>({
   }, [value, prevValueRef, handleChange]);
   return uncontrolledState;
 }
-
 export { useControllableState };
