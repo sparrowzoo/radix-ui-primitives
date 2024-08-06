@@ -53,19 +53,31 @@ function useUncontrolledState<T>({
   //useCallBack
   /**
    * A custom hook that converts a callback to a ref
-   * 1. to avoid triggering re-renders when passed as aprop
+   * 1. to avoid triggering re-renders when passed as a prop
    * 2. or avoid re-executing effects when passed as a dependency
-   *
    * ? 为什么不直接用官方的useCallBack?
    */
-  //这里的useCallbackRef是为了防止 onChange 回调函数被多次调用
+    //这里的useCallbackRef是为了防止 onChange 回调函数被多次调用
   const handleChange = useCallbackRef(onChange);
+
+  //通过 React.Dispatch<React.SetStateAction<number | undefined>>自定义callback 参数类型
+  // const setValue: React.Dispatch<React.SetStateAction<number | undefined>> = React.useCallback(
+  //   (nextValue) => {
+  //     return value;
+  //   },
+  //   []
+  // );
+
   React.useEffect(() => {
     if (prevValueRef.current !== value) {
       handleChange(value as T);
       prevValueRef.current = value;
     }
+    return () => {
+      console.log('unmount');
+    };
   }, [value, prevValueRef, handleChange]);
   return uncontrolledState;
 }
+
 export { useControllableState };
