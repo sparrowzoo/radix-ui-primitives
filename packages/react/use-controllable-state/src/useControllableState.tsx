@@ -58,6 +58,7 @@ function useUncontrolledState<T>({
    *
    * ? 为什么不直接用官方的useCallBack?
    */
+  //这里的useCallbackRef是为了防止 onChange 回调函数被多次调用
   const handleChange = useCallbackRef(onChange);
   React.useEffect(() => {
     if (prevValueRef.current !== value) {
