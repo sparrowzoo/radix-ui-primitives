@@ -9,6 +9,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type { Scope } from '@radix-ui/react-context';
+import { ForwardedRef } from 'react';
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
@@ -17,10 +18,11 @@ import type { Scope } from '@radix-ui/react-context';
 const CHECKBOX_NAME = 'Checkbox';
 
 type ScopedProps<P> = P & { __scopeCheckbox?: Scope };
+//上下文 用于Button及indicator 的状态传递
 const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
-
+//自定义checkbox 的状态 原生input indeterminate 的属性
 type CheckedState = boolean | 'indeterminate';
-
+//状态的取值类型
 type CheckboxContextValue = {
   state: CheckedState;
   disabled?: boolean;
@@ -30,7 +32,12 @@ const [CheckboxProvider, useCheckboxContext] =
   createCheckboxContext<CheckboxContextValue>(CHECKBOX_NAME);
 
 type CheckboxElement = React.ElementRef<typeof Primitive.button>;
+//
+// type PrimitiveButtonProps = React.ComponentPropsWithoutRef<'button'>;
+// type InputHTMLAttributes = React.InputHTMLAttributes<HTMLButtonElement>;
+//定义button的属性，三条语句同等效果
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
+//重定义Checkbox的属性, 继承button的属性,重写checked属性，添加onCheckedChange属性
 interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked'> {
   checked?: CheckedState;
   defaultChecked?: CheckedState;
@@ -38,8 +45,12 @@ interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultC
   onCheckedChange?(checked: CheckedState): void;
 }
 
+/**
+ * CheckboxElement 表示被引用组件，CheckboxProps 表示组件属性
+ */
 const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
-  (props: ScopedProps<CheckboxProps>, forwardedRef) => {
+  (props: ScopedProps<CheckboxProps>, forwardedRef:ForwardedRef<CheckboxElement>) => {
+    //将props 的属性解构出来
     const {
       __scopeCheckbox,
       name,
@@ -52,10 +63,14 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
       onCheckedChange,
       ...checkboxProps
     } = props;
+    //拿到当前button的ref
     const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
+    //可以将多文化RefObj和RefCallback转换成单个RefCallback,将执行
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
+    //将button的冒泡行为传递至indicator
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
+    //是否在form中
     const isFormControl = button ? Boolean(button.closest('form')) : true;
     const [checked = false, setChecked] = useControllableState({
       prop: checkedProp,
@@ -90,8 +105,10 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
             if (event.key === 'Enter') event.preventDefault();
           })}
           onClick={composeEventHandlers(props.onClick, (event) => {
+            //点击按钮时同步设置checked状态
             setChecked((prevChecked) => (isIndeterminate(prevChecked) ? true : !prevChecked));
             if (isFormControl) {
+              //如果在Form中,设置其冒泡行为，并传递至indicator
               hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
               // if checkbox is in a form, stop propagation from the button so that we only propagate
               // one click event (from the input). We propagate changes from an input so that native
@@ -142,6 +159,7 @@ const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxInd
   (props: ScopedProps<CheckboxIndicatorProps>, forwardedRef) => {
     const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
     const context = useCheckboxContext(INDICATOR_NAME, __scopeCheckbox);
+    //手动绘制checkbox的样式，根据checked状态显示不同的样式
     return (
       <Presence present={forceMount || isIndeterminate(context.state) || context.state === true}>
         <Primitive.span
