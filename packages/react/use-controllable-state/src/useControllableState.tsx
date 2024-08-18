@@ -21,6 +21,8 @@ function useControllableState<T>({
   //如果传入了 prop，则认为是受控组件，否则是非受控组件
   /**
    * <input defaultValue={defaultValue} value={value} onChange={(e) => setValue(e.target.value)} />
+   * 受控通过属性控制，非受控通过状态控制
+   * 受控组件的value属性是可控的，非受控组件的defaultValue属性是可控的
    */
   const isControlled = prop !== undefined;
   const value = isControlled ? prop : uncontrolledProp;
