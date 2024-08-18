@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 function usePrevious<T>(value: T) {
+  //对象初始化
   const ref = React.useRef({ value, previous: value });
 
   // We compare values before making an update to ensure that

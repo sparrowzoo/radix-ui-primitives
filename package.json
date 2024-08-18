@@ -12,7 +12,7 @@
     "types:check": "tsc --skipLibCheck --noEmit",
     "test": "jest",
     "test:ci": "yarn types:check && jest --ci && yarn cypress:ci",
-    "storybook": "BROWSER=none storybook dev -p 9009",
+    "storybook": " storybook dev -p 9009",
     "cypress:ci": "start-server-and-test storybook http://localhost:9009 cypress:run",
     "cypress:run": "cypress run",
     "cypress:dev": "cypress open",
